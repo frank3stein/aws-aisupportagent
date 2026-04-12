@@ -1,0 +1,8 @@
+notes.md
+.env
+.venv/
+__pycache__/
+agentcore.yaml
+agentcore/.cache/
+agentcore/.cli/
+*.log

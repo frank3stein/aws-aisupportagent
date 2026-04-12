@@ -1,0 +1,44 @@
+[
+  {
+    "name": "get_order",
+    "description": "Get details for a specific order by order ID.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "type": "string",
+          "description": "The order ID to look up (e.g. ORD-001)"
+        }
+      },
+      "required": ["order_id"]
+    }
+  },
+  {
+    "name": "get_customer_orders",
+    "description": "Get all orders for a specific customer.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "customer_id": {
+          "type": "string",
+          "description": "The customer ID to look up orders for"
+        }
+      },
+      "required": ["customer_id"]
+    }
+  },
+  {
+    "name": "get_customer",
+    "description": "Get customer profile and details by customer ID.",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "customer_id": {
+          "type": "string",
+          "description": "The customer ID to look up"
+        }
+      },
+      "required": ["customer_id"]
+    }
+  }
+]

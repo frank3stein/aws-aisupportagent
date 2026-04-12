@@ -1,0 +1,16 @@
+{
+  "targets": {
+    "default": {
+      "resources": {
+        "runtimes": {
+          "csagent": {
+            "runtimeId": "csagent_csagent-5cWPs5FCh9",
+            "runtimeArn": "arn:aws:bedrock-agentcore:us-east-1:796827031094:runtime/csagent_csagent-5cWPs5FCh9",
+            "roleArn": "arn:aws:iam::796827031094:role/AgentCore-csagent-default-ApplicationAgentCsagentRu-Ul640QiUzJGA"
+          }
+        },
+        "stackName": "AgentCore-csagent-default"
+      }
+    }
+  }
+}

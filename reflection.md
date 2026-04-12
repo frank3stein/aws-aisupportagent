@@ -1,0 +1,13 @@
+## Reflection
+
+### Design Decision: Lazy Initialization for AgentCore Startup
+
+One of the most important architectural choices in this project was deferring all heavy client initialization using a lazy singleton pattern. The `_get_clients()` function holds `BedrockModel`, `MemoryClient`, and the boto3 runtime client as module-level `None` values, initializing them only on the first real request. This was necessary because AgentCore enforces a strict 30-second window between container start and ASGI server readiness. Early versions of the code initialized all clients at module level, which caused every deployment to fail with "Runtime initialization time exceeded" — the combined startup time of the Strands model, memory client, and browser imports consistently exceeded the limit. Moving initialization inside `_get_clients()` reduced module-level work to two imports and one `BedrockAgentCoreApp()` call, bringing startup well under the threshold.
+
+### Challenge: Python Version Mismatch Causing Silent Container Failures
+
+The most time-consuming challenge was a `.python-version` file on the local machine specifying Python 3.14. When `agentcore deploy` packages the project into a zip file, it includes this file. The AgentCore container runtime uses pyenv internally and reads `.python-version` on startup — but the container only has Python 3.13.9 installed. The result was `pyenv: version 3.14 not installed`, causing the process to exit immediately with no application logs and no useful error message from the runtime, only the generic "initialization time exceeded" timeout. The fix required setting `.python-version` to `3.13`, clearing the AgentCore staging cache at `agentcore/.cache/csagent/staging/`, and redeploying.
+
+### Production Consideration: Read-Only Container Filesystem
+
+The AgentCore container mounts application code at `/var/task` as a read-only filesystem. Playwright's node binary is deployed there without execute permissions, breaking browser automation with a `PermissionError`. The runtime workaround was copying the binary to `/tmp` (writable) and setting the `PLAYWRIGHT_NODEJS_PATH` environment variable to point to the copy. In a production environment this approach is fragile — `/tmp` is ephemeral and the copy must happen on every cold start. The correct production solution would be a custom container image built with `playwright install chromium` executed during the Docker build step, ensuring the binary is present with correct permissions before the read-only layer is applied. This would also eliminate the cold-start overhead of the file copy on every new container instance.
